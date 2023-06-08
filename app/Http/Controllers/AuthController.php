@@ -30,6 +30,7 @@ class AuthController extends Controller
             'response_type' => 'code',
             'scope' => '',
             'state' => $state,
+            //'prompt' => 'consent',
         ]);
 
         return redirect(config('services.bee_id.url') . 'oauth/authorize?' . $query);
@@ -80,11 +81,10 @@ class AuthController extends Controller
     {
         Cache::delete(Passport::getAccessToken());
 
-        return redirect()->route('home')
-            ->withCookies([
-                Cookie::forget('access_token'),
-                Cookie::forget('refresh_token'),
-                Cookie::forget('expires_in'),
-            ]);
+        Cookie::queue(Cookie::forget('access_token'));
+        Cookie::queue(Cookie::forget('refresh_token'));
+        Cookie::queue(Cookie::forget('expires_in'));
+
+        return redirect()->route('home');
     }
 }
